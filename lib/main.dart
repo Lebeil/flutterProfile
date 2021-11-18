@@ -39,7 +39,52 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: MyHomePage(),
+      home: ImagePicture(),
+    );
+  }
+}
+
+class ImagePicture extends StatefulWidget {
+  const ImagePicture({Key? key}) : super(key: key);
+  @override
+  _ImagePictureState createState() => _ImagePictureState();
+}
+
+class _ImagePictureState extends State<ImagePicture> {
+  String? userPhotoUrl;
+  String defaultUrl =
+      'https://icon-library.com/images/default-profile-icon/default-profile-icon-16.jpg';
+
+  @override
+  void initState() {
+    super.initState();
+    getProfilImage();
+  }
+
+  getProfilImage() {
+    Reference ref = storage.ref().child("Users/dave.jpg");
+    ref.getDownloadURL().then((downloadUrl) {
+      setState(() {
+        userPhotoUrl = downloadUrl.toString();
+      });
+    }).catchError((e) {
+      setState(() {
+        print("Un problème est survenu: ${e.error}");
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 200,
+      width: 200,
+      child: CircleAvatar(
+        backgroundColor: Colors.grey,
+        backgroundImage: userPhotoUrl == null
+            ? NetworkImage(defaultUrl)
+            : NetworkImage(userPhotoUrl!),
+      ),
     );
   }
 }
